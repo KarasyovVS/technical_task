@@ -42,6 +42,9 @@ class CurrencyClient:
     def get_currency(self, *args, base="EUR"):
         if not self.__CACHE_MANAGER.check_cache_folder():
             self.__CACHE_MANAGER.make_cache_folder()
+        args = list(args)
+        for i in range(len(args)):
+            args[i] = args[i].upper()
         filename = base + "-" + ",".join(args) + ".json"
         try:
             data = self.__CACHE_MANAGER.get_from_cache(filename)

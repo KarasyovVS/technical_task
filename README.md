@@ -7,11 +7,12 @@ includes objects of cache class (JSONCache) and api class (ExchangeRateApi).
 Object of the "CurrencyClient" provides several methods, such as:
 - set_interval (sets the cache update time);
 - get_interval (returns current cache update time);
-- get_currency (looks for the presence of a user request in the cache and its 
-  relevance; if the user's request is in the cache, but is out of date - a 
-  new request to the api is initialized; the same happens if the user's 
-  request is not in the cache);
-- clear_cache (deletes the cache file by its name)
+- get_currency (looks for the presence of a response of user request in the 
+  cache and its 
+  relevance; if the response is in the cache, but is out of date - a 
+  new request to the api is initialized; the same happens if the response is 
+  not in the cache);
+- clear_cache (deletes the cache file by its name).
 
 ## Preparations
 
@@ -22,4 +23,6 @@ requirements.txt".
 
 ## Running smoke tests
 
-Run smoke tests using the command "pytest -m smoke" or using Dockerfile.
+Run smoke tests using the command "pytest -m smoke" or using Dockerfile 
+("docker build ." -> "docker run -e "ACCESS_KEY=[your access key]" 
+[image_number]").

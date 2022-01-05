@@ -2,12 +2,13 @@ import json
 import os
 
 from framework.base_cache.base_cache import BaseCache
-from tests.config.paths import Paths
+from cache_folder_path import CacheFolderPath
 
 
 class JSONCache(BaseCache):
 
-    CACHE_PATH = Paths.CACHE_FOLDER_PATH
+    CACHE_PATH = CacheFolderPath.CACHE_FOLDER_PATH
+    CACHE_NAME = CacheFolderPath.CACHE_FOLDER_NAME
 
     def save_in_cache(self, path_to_file, data):
         with open(self.CACHE_PATH + path_to_file, "w") as cache_file:
@@ -21,7 +22,7 @@ class JSONCache(BaseCache):
         os.remove(self.CACHE_PATH + path_to_file)
 
     def check_cache_folder(self):
-        return os.path.exists(self.CACHE_PATH[:-1])
+        return os.path.exists(self.CACHE_PATH)
 
     def make_cache_folder(self):
-        os.mkdir(self.CACHE_PATH[:-1])
+        os.mkdir(self.CACHE_NAME)
