@@ -1,6 +1,9 @@
 import pytest
 
+from tests.clients.currency_client import CurrencyClient
+
 
 @pytest.fixture()
-def get_possible_symbols():
-    pass
+def currency_client():
+    client = CurrencyClient(minutes=60)
+    yield client
