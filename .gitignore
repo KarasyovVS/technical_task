@@ -130,4 +130,4 @@ dmypy.json
 .pyre/
 
 # Test Cache
-/cache
+/test_cache

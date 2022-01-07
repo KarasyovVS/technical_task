@@ -1,7 +1,9 @@
 class SmokeData:
+    """A class with data for smoke tests of CurrencyClient main
+    functionality."""
 
-    SMOKE_DATA = [("RUB", "USD"), ("RuB", "uSd"), ()]
-    CLEAR_CACHE_SMOKE_DATA = [("SEK", "BOB"), ("SEK", "BOB")]
-    WRONG_SMOKE_DATA = [("wrong", "data")]
-    INTERVAL_CHECK_SMOKE_DATA = [((0, 0, 0, 0, 0, 0, 0),
+    pos_smoke_data = [("RUB", "USD"), ("RuB", "uSd"), ()]
+    clear_cache_smoke_data = [("SEK", "BOB"), ("SEK", "BOB")]
+    neg_smoke_data = [("wrong", "data")]
+    interval_check_smoke_data = [((0, 0, 0, 0, 0, 0, 0),
                                   (9, 8, 7, 6, 5, 4, 3))]

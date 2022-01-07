@@ -26,3 +26,11 @@ requirements.txt".
 Run smoke tests using the command "pytest -m smoke" or using Dockerfile 
 ("docker build ." -> "docker run -e "ACCESS_KEY=[your access key]" 
 [image_number]").
+
+### NOTES:
+1. Cached responses have filenames formatted as "[base_currency]-[args_currency]
+.json".
+2. "Exchange Rates API for free" subscription plan provides hourly updates o 
+   exchange rates, that is why by default  function currency_client in 
+   conftest.py file passes CurrencyClient instance attribute to tests with
+   requests frequency to API equal to 60 minutes 
