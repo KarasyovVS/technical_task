@@ -2,7 +2,7 @@ import logging
 import pytest
 
 from clients.currency_client import CurrencyClient
-from tests.smoke_data import SmokeData
+from tests.smoke_data import IntervalCheckData
 
 
 class TestSmoke:
@@ -30,27 +30,26 @@ class TestSmoke:
     logger = logging.getLogger("TestSmoke")
 
     @pytest.mark.smoke
-    @pytest.mark.parametrize("data", SmokeData.pos_smoke_data)
+    @pytest.mark.parametrize("data", [("RUB", "USD"), ("RuB", "uSd"), ()])
     def test_currency_client(self, currency_client, data):
         currency_client.get_currency(*data)
 
     @pytest.mark.smoke
-    @pytest.mark.parametrize("data", SmokeData.clear_cache_smoke_data)
+    @pytest.mark.parametrize("data", [("SEK", "BOB"), ("SEK", "BOB")])
     def test_currency_client_clear_cache(self, currency_client, data):
         currency_client.get_currency(*data)
         currency_client.clear_cache(*data)
 
     @pytest.mark.smoke
     @pytest.mark.xfail
-    @pytest.mark.parametrize("data", SmokeData.neg_smoke_data)
-    def test_currency_client_xfail(self, currency_client, data):
-        currency_client.get_currency(*data)
+    def test_currency_client_xfail(self, currency_client):
+        currency_client.get_currency("wrong", "data")
 
     @pytest.mark.smoke
     @pytest.mark.parametrize("default_value, time_parameter",
-                             SmokeData.interval_check_smoke_data)
-    def test_currency_client_intervals_getter_and_setter(
-            self, default_value, time_parameter):
+                             IntervalCheckData.interval_check_smoke_data)
+    def test_currency_client_intervals_getter_and_setter(self, default_value,
+                                                         time_parameter):
         currency_client = CurrencyClient()
         assert currency_client.get_interval() == default_value
         self.logger.info("Currency client's get_interval function works "

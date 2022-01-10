@@ -11,9 +11,9 @@ class JSONCache(BaseCache):
 
     Attributes
     ----------
-    __cache_path : str
+    _cache_path : str
         Full os cache folder path.
-    __cache_name : str
+    _cache_name : str
         Cache folder name.
 
     Methods
@@ -29,8 +29,8 @@ class JSONCache(BaseCache):
     make_cache_folder()
         Makes cache folder.
     """
-    __cache_path = CacheFolderPath.cache_folder_path
-    __cache_name = CacheFolderPath.cache_folder_name
+    _cache_path = CacheFolderPath.cache_folder_path
+    _cache_name = CacheFolderPath.cache_folder_name
 
     def save_in_cache(self, path_to_file: str, data: dict):
         """
@@ -48,7 +48,7 @@ class JSONCache(BaseCache):
         None
         """
 
-        with open(os.path.join(self.__cache_path, path_to_file), "w") as \
+        with open(os.path.join(self._cache_path, path_to_file), "w") as \
                 cache_file:
             json.dump(data, cache_file)
 
@@ -67,7 +67,7 @@ class JSONCache(BaseCache):
             Value of specific cached response.
         """
 
-        with open(os.path.join(self.__cache_path, path_to_file)) as cache_file:
+        with open(os.path.join(self._cache_path, path_to_file)) as cache_file:
             return json.load(cache_file)
 
     def clear_cache(self, path_to_file: str):
@@ -84,7 +84,7 @@ class JSONCache(BaseCache):
         None
         """
 
-        os.remove(os.path.join(self.__cache_path, path_to_file))
+        os.remove(os.path.join(self._cache_path, path_to_file))
 
     def check_cache_folder(self) -> bool:
         """
@@ -92,11 +92,11 @@ class JSONCache(BaseCache):
 
         Returns
         -------
-        os.path.exists(self.__cache_path) : bool
+        os.path.exists(self._cache_path) : bool
             Boolean value of presence of cache folder.
         """
 
-        return os.path.exists(self.__cache_path)
+        return os.path.exists(self._cache_path)
 
     def make_cache_folder(self):
         """
@@ -107,4 +107,4 @@ class JSONCache(BaseCache):
         None
         """
 
-        os.mkdir(self.__cache_name)
+        os.mkdir(self._cache_name)
