@@ -1,7 +1,6 @@
 import logging
-import sys
-
 import requests
+from urllib.parse import quote_plus
 
 
 class BaseAPI:
@@ -14,36 +13,48 @@ class BaseAPI:
         Host scheme.
     _host : str
         Base API host to work with.
-    _api_ver : str
+    _api_version : str
         Version of using API.
 
     Methods
     -------
-    send_get_request(path, params, status_code)
-        Sends a get-request to API and returns response dictionary object.
+    send_get_request(path, params, status_code=None)
+        Sends a get-request to API and returns requests.Response object.
         Optional - status code check, if status code is not as expected -
         exception is raised.
-    get_status_code(response)
-        Returns the status code from the 'response' variable.
-    get_info_from_json(response)
-        Returns the JSON as a dict object from the 'response' variable.
-    prepare_url(path, params) -> str:
-        Forms a URL for request.
+    prepare_url(path, params):
+        Forms a URL for a request.
     """
 
     logger = logging.getLogger("BaseAPI")
 
     def __init__(self, scheme, host, api_version):
+        """
+        Constructs all the necessary attributes for the BaseAPI object.
+
+        Parameters
+        ----------
+        scheme : str
+            Host scheme.
+        host : str
+            Base API host to work with.
+        api_version : str
+            Version of using API.
+        """
+
         self._scheme = scheme
         self._host = host
-        self._api_ver = api_version
+        self._api_version = api_version
 
-    def send_get_request(self, path: str, params: dict, status_code: int) -> \
-            dict:
+    def send_get_request(self, path: str, params: dict, status_code=None) -> \
+            requests.Response:
         """
-        Sends a get-request to API and returns response dictionary object.
+        Sends a get-request to API and returns requests.Response object.
         Optional - status code check, if status code is not as expected -
         exception is raised.
+
+        By default, status_code is None, that means that status code check is
+        disabled.
 
         Parameters
         ----------
@@ -52,60 +63,38 @@ class BaseAPI:
         params : dict
             A dict of required parameters and their values.
         status_code : int
-            An expected status code or the response.
+            An expected status code of the response.
 
         Returns
         -------
-        get_info_from_json(response) : dict
-            Dictionary with data taken from the response.
+        response : requests.Response
+            The response from the request.
 
         Raises
         ------
-        SystemExit
+        RuntimeError
             Raises if response status code is not as expected.
         """
 
         final_url = self.prepare_url(path, params)
         response = requests.get(final_url)
         if status_code:
-            response_status_code = self.get_status_code(response)
+            response_status_code = response.status_code
             if response_status_code == status_code:
                 self.logger.info("{url_for_logs} - GET - {code}:".format(
                     url_for_logs=final_url.split("?")[0],
                     code=status_code))
             else:
-                self.logger.error("An error occurred, status code: {code}".
-                                  format(code=response_status_code))
-                sys.exit()
-        return self.get_info_from_json(response)
-
-    def get_status_code(self, response: requests.Response) -> int:
-        """
-        Returns the status code from the 'response' variable.
-
-        Returns
-        -------
-        response.status_code : int
-            Value of response status code.
-        """
-
-        return response.status_code
-
-    def get_info_from_json(self, response: requests.Response) -> dict:
-        """
-        Returns the JSON as a dict object from the 'response' variable.
-
-        Returns
-        -------
-        response.json() : dict
-            JSON as a 'dict' python object.
-        """
-
-        return response.json()
+                raise RuntimeError("An error occurred, the status code does not"
+                                   " match the expected one: "
+                                   "{code} (expected - {expected_code}".
+                                   format(code=response_status_code,
+                                          expected_code=status_code))
+        return response
 
     def prepare_url(self, path: str, params: dict) -> str:
         """
-        Forms a URL for request.
+        Forms a URL for a request.
 
         Parameters
         ----------
@@ -116,11 +105,13 @@ class BaseAPI:
 
         Returns
         -------
-        "&".join([url, *params]) : str
+        '{}?{}'.format(url, params) : str
             Final url.
         """
 
-        url = "://".join([self._scheme, "/".join([self._host, self._api_ver,
-                                                  path])])
-        params = ["=".join([key, params[key]]) for key in params]
-        return "&".join([url, *params])
+        url = "{scheme}://{host}/{api_ver}/{path}".format(
+            scheme=self._scheme, host=self._host, api_ver=self._api_version,
+            path=path)
+        params = "&".join(["{k}={v}".format(
+            k=key, v=quote_plus(params[key], ",")) for key in params])
+        return "{}?{}".format(url, params)

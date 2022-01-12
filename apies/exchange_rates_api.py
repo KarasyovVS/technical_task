@@ -12,19 +12,19 @@ class ExchangeRatesApi(BaseAPI):
     _key : str
         API key for requests access (obtained from the environment
         variable named 'ACCESS KEY').
-    _endpoint_and_key : str
-        A part of Exchange Rates API path.
+    _endpoint : str
+        Exchange Rates API endpoint, which provides specific functionality.
 
     Methods
     -------
     send_exchange_rate_request(base, *symbols)
-        Forms a dictionary of parameters and passes it with '_endpoint_and_key'
-        variable to the 'send_get_request' method.
+        Forms a dictionary of parameters and passes it with '_key' variable
+        to the 'send_get_request' method.
     """
 
     _key = os.environ.get("ACCESS_KEY")
 
-    def __init__(self, endpoint: str):
+    def __init__(self, endpoint: str, scheme: str, host: str, api_version: str):
         """
         Constructs all the necessary attributes for the ExchangeRatesApi object.
 
@@ -32,18 +32,22 @@ class ExchangeRatesApi(BaseAPI):
         ----------
         endpoint : str
             Exchange Rates API endpoint, which provides specific functionality.
+        scheme : str
+            Host scheme.
+        host : str
+            Base API host to work with.
+        api_version : str
+            Version of using API.
         """
 
-        super().__init__(scheme="http", host="api.exchangeratesapi.io",
-                         api_version="v1")
-        self._endpoint_and_key = "{api_endpoint}?access_key={api_key}".format(
-            api_endpoint=endpoint, api_key=self._key)
+        super().__init__(scheme=scheme, host=host, api_version=api_version)
+        self._endpoint = endpoint
 
     def send_exchange_rate_request(self, base: str, *symbols: str,
-                                   status_code: int):
+                                   status_code: int) -> dict:
         """
-        Forms a dictionary of parameters and passes it with '_endpoint_and_key'
-        variable to the 'send_get_request' method.
+        Forms a dictionary of parameters and passes it with '_key' variable
+        to the 'send_get_request' method.
 
         Parameters
         ----------
@@ -53,17 +57,17 @@ class ExchangeRatesApi(BaseAPI):
             A number of currencies for comparison with base one (three-letter
             currency code for each)
         status_code : int
-            An expected status code or the response.
+            An expected status code of the response.
 
         Returns
         -------
-        super().send_get_request(path=self._endpoint_and_key, params=params,
-        status_code=status_code) : dict
+        self.send_get_request(path=self._endpoint_and_key, params=params,
+        status_code=status_code).json() : dict
             Dictionary with data taken from the response.
         """
 
-        params = {"base": base}
+        params = {"access_key": self._key, "base": base}
         if len(symbols):
             params["symbols"] = ",".join([symbol.upper() for symbol in symbols])
-        return super().send_get_request(path=self._endpoint_and_key,
-                                        params=params, status_code=status_code)
+        return self.send_get_request(path=self._endpoint, params=params,
+                                     status_code=status_code).json()
